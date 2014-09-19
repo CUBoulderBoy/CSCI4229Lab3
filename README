@@ -1,0 +1,15 @@
+Lab 3: Crystal Cave
+
+Christopher Jordan
+CSCI4229 Fall 2014
+
+Utilizing code provided from William Schreuder via the ex9 program
+
+Key bindings
+  m          Toggle between perspective and orthogonal
+  +/-        Changes field of view for perspective
+  a          Toggle axes
+  arrows     Change view angle
+  PgDn/PgUp  Zoom in and out
+  0          Reset view angle
+  ESC        Exit
