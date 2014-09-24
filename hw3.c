@@ -31,12 +31,21 @@
 #endif
 
 int axes=0;       //  Display axes
-int mode=0;       //  Projection mode
+int mode=1;       //  Projection mode
 int th=0;         //  Azimuth of view angle
 int ph=0;         //  Elevation of view angle
 int fov=55;       //  Field of view (for perspective)
 double asp=1;     //  Aspect ratio
-double dim=10.0;   //  Size of world
+double dim=10.0;  //  Size of world
+int new_snow=1;   // Global to determine if arrays need to be populated
+
+// Arrays to store snowflake data
+#define NUM_SNOWFLAKES 12
+int x_ar[NUM_SNOWFLAKES];
+int y_ar[NUM_SNOWFLAKES];
+int z_ar[NUM_SNOWFLAKES];
+double s_ar[NUM_SNOWFLAKES];
+double m_ar[NUM_SNOWFLAKES];
 
 //  Macro for sin & cos in degrees
 #define Cos(th) cos(3.1415927/180*(th))
@@ -83,12 +92,10 @@ static void Project()
 }
 
 /*
- *  Draw a crystal
- *     
- *     
+ *  Draw an ice crystal 
  *     
  */
-static void crystal(double x,double y,double z,
+static void ice_crystal(double x,double y,double z,
                  double dx,double dy,double dz,
                  double rx, double ry, double rz,
                  double th)
@@ -167,11 +174,11 @@ static void crystal(double x,double y,double z,
  static void snowflake(double x,double y,double z,
    double dx, double dy, double dz, double m, double r)
  {
-   crystal(x,y,z, dx,dy,dz, r,r+1,r, 0);
-   crystal(x,y,z, dx/m,dy/m,dz/m, r+1,r,r+1, 45);
-   crystal(x,y,z, dx/m,dy/m,dz/m, r-1,r,r-1, 45);
-   crystal(x,y,z, dx/m,dy/m,dz/m, r+1,r,r-1, 45);
-   crystal(x,y,z, dx/m,dy/m,dz/m, r-1,r,r+1, 45);
+   ice_crystal(x,y,z, dx,dy,dz, r,r+1,r, 0);
+   ice_crystal(x,y,z, dx/m,dy/m,dz/m, r+1,r,r+1, 45);
+   ice_crystal(x,y,z, dx/m,dy/m,dz/m, r-1,r,r-1, 45);
+   ice_crystal(x,y,z, dx/m,dy/m,dz/m, r+1,r,r-1, 45);
+   ice_crystal(x,y,z, dx/m,dy/m,dz/m, r-1,r,r+1, 45);
 }
 
 /*
@@ -179,16 +186,22 @@ static void crystal(double x,double y,double z,
  */
 void display()
 {
+   // Temporary variables for snowflake data calculation
    int i,x,y,z;
    double s,m;
+   int int_dim = (int)dim;
 
    const double len=1.5;  //  Length of axes
+   
    //  Erase the window and the depth buffer
    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+   
    //  Enable Z-buffering in OpenGL
    glEnable(GL_DEPTH_TEST);
+   
    //  Undo previous transformations
    glLoadIdentity();
+   
    //  Perspective - set eye position
    if (mode)
    {
@@ -197,53 +210,64 @@ void display()
       double Ez = +2*dim*Cos(th)*Cos(ph);
       gluLookAt(Ex,Ey,Ez , 0,0,0 , 0,Cos(ph),0);
    }
+   
    //  Orthogonal - set world orientation
    else
    {
       glRotatef(ph,1,0,0);
       glRotatef(th,0,1,0);
+   } 
+
+   // Building snowfall data
+   if( new_snow == 1 ){
+      for (i = 0; i < NUM_SNOWFLAKES; i++){
+         // Set x for i in array
+         x = rand() % int_dim;
+         if (rand() % 2 == 0){
+            x = x * -1;
+         }
+         x_ar[i] = x;
+
+         // Set y for i in array
+         y = rand() % int_dim;
+         if (rand() % 2 == 0){
+            y = y * -1;
+         }
+         y_ar[i] = y;
+
+         // Set z for i in array
+         z = rand() % int_dim;
+         if (rand() % 2 == 0){
+            z = z * -1;
+         }
+         z_ar[i] = z;
+
+         // Set size of primary ice crystal
+         s = rand() % int_dim;
+         if (s == 0.0){
+            s = 0.5;
+         }
+         else{
+            s = 1/s;
+         }
+         s_ar[i] = s;
+
+         // Set size modifier for secondary ice crystals
+         m = rand() % int_dim;
+         if (m == 0.0){
+            m = 1.3;
+         }
+         else{
+            m = 1 + 1/m;
+         }
+         m_ar[i] = m;
+      }
+      new_snow = 0;
    }
 
-   //  Crystals
-   /*l = 0;
-   for (i=-6.28; i<=6.28;){
-      //for (j=-1;j<=1;j++)
-         for (k=-5; k<=5; k++){
-            crystal(i,sin(i),k, 0.2,0.2,0.2 , 0);
-         }
-      i += 0.5;
-      l++;
-   }*/  
-
    // Building snowfall
-   for (i = 0; i < 10; i++){
-      x = rand() % 10;
-      y = rand() % 10;
-      z = rand() % 10;
-      if (rand() % 2 == 0){
-         x = x * -1;
-      }
-      if (rand() % 2 == 0){
-         y = y * -1;
-      }
-      if (rand() % 2 == 0){
-         z = z * -1;
-      }
-      s = rand() % 10;
-      if (s == 0.0){
-         s = 0.5;
-      }
-      else{
-         s = 1/s;
-      }
-      m = rand() % 7;
-      if (m == 0.0){
-         m = 1.3;
-      }
-      else{
-         m = 1 + 1/m;
-      }
-      snowflake(x, y, z, s,s,s, m, 0);
+   for (i = 0; i < NUM_SNOWFLAKES; i++){
+      snowflake(x_ar[i], y_ar[i], z_ar[i], s_ar[i],s_ar[i],s_ar[i], m_ar[i], 0);
    }
 
    //  Draw axes
