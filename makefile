@@ -1,4 +1,4 @@
-# Lab 3: Crystal Cave
+# Lab 3: Snowfall
 # Christopher Jordan
 # CSCI 4229 Fall 2014
 
