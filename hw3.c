@@ -165,13 +165,13 @@ static void crystal(double x,double y,double z,
  *     rotated th about the y axis
  */
  static void snowflake(double x,double y,double z,
-   double dx, double dy, double dz, double r)
+   double dx, double dy, double dz, double m, double r)
  {
    crystal(x,y,z, dx,dy,dz, r,r+1,r, 0);
-   crystal(x,y,z, dx/1.3,dy/1.3,dz/1.3, r+1,r,r+1, 45);
-   crystal(x,y,z, dx/1.3,dy/1.3,dz/1.3, r-1,r,r-1, 45);
-   crystal(x,y,z, dx/1.3,dy/1.3,dz/1.3, r+1,r,r-1, 45);
-   crystal(x,y,z, dx/1.3,dy/1.3,dz/1.3, r-1,r,r+1, 45);
+   crystal(x,y,z, dx/m,dy/m,dz/m, r+1,r,r+1, 45);
+   crystal(x,y,z, dx/m,dy/m,dz/m, r-1,r,r-1, 45);
+   crystal(x,y,z, dx/m,dy/m,dz/m, r+1,r,r-1, 45);
+   crystal(x,y,z, dx/m,dy/m,dz/m, r-1,r,r+1, 45);
 }
 
 /*
@@ -180,7 +180,7 @@ static void crystal(double x,double y,double z,
 void display()
 {
    int i,x,y,z;
-   double s;
+   double s,m;
 
    const double len=1.5;  //  Length of axes
    //  Erase the window and the depth buffer
@@ -215,35 +215,35 @@ void display()
       l++;
    }*/  
 
-   //srand(time(NULL));
-   //int r = rand();
-
    // Building snowfall
    for (i = 0; i < 10; i++){
-      //for (j = 0; j < 10; j++){
-      //   for (k = 0; k < 10; k++){
-            x = rand() % 10;
-            y = rand() % 10;
-            z = rand() % 10;
-            if (rand() % 2 == 0){
-               x = x * -1;
-            }
-            if (rand() % 2 == 0){
-               y = y * -1;
-            }
-            if (rand() % 2 == 0){
-               z = z * -1;
-            }
-            s = rand() % 10;
-            if (s == 0.0){
-               s = 0.5;
-            }
-            else{
-               s = 1/s;
-            }
-            snowflake(x, y, z, s,s,s, 0);
-      //   }
-      //}
+      x = rand() % 10;
+      y = rand() % 10;
+      z = rand() % 10;
+      if (rand() % 2 == 0){
+         x = x * -1;
+      }
+      if (rand() % 2 == 0){
+         y = y * -1;
+      }
+      if (rand() % 2 == 0){
+         z = z * -1;
+      }
+      s = rand() % 10;
+      if (s == 0.0){
+         s = 0.5;
+      }
+      else{
+         s = 1/s;
+      }
+      m = rand() % 7;
+      if (m == 0.0){
+         m = 1.3;
+      }
+      else{
+         m = 1 + 1/m;
+      }
+      snowflake(x, y, z, s,s,s, m, 0);
    }
 
    //  Draw axes
