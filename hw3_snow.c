@@ -100,7 +100,7 @@ static void crystal(double x,double y,double z,
    glScaled(dx,dy,dz);
    
    //  Crystal
-   glBegin(GL_TRIANGLES);
+   glBegin(GL_TRIANGLE_FAN);
 
    //  Front Top
    glColor3f(0.0,0.0,1.0);
@@ -166,10 +166,10 @@ static void crystal(double x,double y,double z,
    double dx, double dy, double dz, double r)
  {
    crystal(x,y,z, dx,dy,dz, r,r+1,r, 0);
-   crystal(x,y,z, dx/1.3,dy/1.3,dz/1.3, r+1,r,r+1, 45);
-   crystal(x,y,z, dx/1.3,dy/1.3,dz/1.3, r-1,r,r-1, 45);
-   crystal(x,y,z, dx/1.3,dy/1.3,dz/1.3, r+1,r,r-1, 45);
-   crystal(x,y,z, dx/1.3,dy/1.3,dz/1.3, r-1,r,r+1, 45);
+   crystal(x,y,z, dx/1.5,dy/1.5,dz/1.5, r+1,r,r+1, 45);
+   crystal(x,y,z, dx/1.5,dy/1.5,dz/1.5, r-1,r,r-1, 45);
+   crystal(x,y,z, dx/1.5,dy/1.5,dz/1.5, r+1,r,r+1, 45);
+   crystal(x,y,z, dx/1.5,dy/1.5,dz/1.5, r-1,r,r+1, 45);
 }
 
 /*
