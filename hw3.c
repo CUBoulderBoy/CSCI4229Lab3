@@ -19,6 +19,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <math.h>
+#include <time.h>
+
 
 //  OpenGL with prototypes for glext
 #define GL_GLEXT_PROTOTYPES
@@ -34,7 +36,7 @@ int th=0;         //  Azimuth of view angle
 int ph=0;         //  Elevation of view angle
 int fov=55;       //  Field of view (for perspective)
 double asp=1;     //  Aspect ratio
-double dim=5.0;   //  Size of world
+double dim=10.0;   //  Size of world
 
 //  Macro for sin & cos in degrees
 #define Cos(th) cos(3.1415927/180*(th))
@@ -177,8 +179,8 @@ static void crystal(double x,double y,double z,
  */
 void display()
 {
-   int j,k,l;
-   double i;
+   int i,x,y,z;
+   double s;
 
    const double len=1.5;  //  Length of axes
    //  Erase the window and the depth buffer
@@ -211,16 +213,38 @@ void display()
          }
       i += 0.5;
       l++;
-   }*/
+   }*/  
 
-   //  Crystals
-   /*for (i=-10; i<=10; i++)
-      for (j=-1;j<=1;j++)
-         for (k=-5; k<=5; k++)
-            crystal(i,0,k, 0.2,0.2,0.2 , 0);*/  
+   //srand(time(NULL));
+   //int r = rand();
 
-   // Messing around
-   snowflake(0,0,0, 0.6,0.6,0.6, 0);
+   // Building snowfall
+   for (i = 0; i < 10; i++){
+      //for (j = 0; j < 10; j++){
+      //   for (k = 0; k < 10; k++){
+            x = rand() % 10;
+            y = rand() % 10;
+            z = rand() % 10;
+            if (rand() % 2 == 0){
+               x = x * -1;
+            }
+            if (rand() % 2 == 0){
+               y = y * -1;
+            }
+            if (rand() % 2 == 0){
+               z = z * -1;
+            }
+            s = rand() % 10;
+            if (s == 0.0){
+               s = 0.5;
+            }
+            else{
+               s = 1/s;
+            }
+            snowflake(x, y, z, s,s,s, 0);
+      //   }
+      //}
+   }
 
    //  Draw axes
    glColor3f(1,1,1);
