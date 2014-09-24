@@ -7,6 +7,7 @@
  *
  *  Key bindings:
  *  m          Toggle between perspective and orthogonal
+ *  f          Toggle between snow frozen in time and falling snow
  *  +/-        Changes field of view for perspective
  *  a          Toggle axes
  *  arrows     Change view angle
@@ -37,7 +38,8 @@ int ph=0;         //  Elevation of view angle
 int fov=55;       //  Field of view (for perspective)
 double asp=1;     //  Aspect ratio
 double dim=10.0;  //  Size of world
-int new_snow=1;   // Global to determine if arrays need to be populated
+int new_snow=1;   //  Global to determine if arrays need to be populated
+int frozen=1;     //  Frozen or falling snow
 
 // Arrays to store snowflake data
 #define NUM_SNOWFLAKES 12
@@ -218,56 +220,92 @@ void display()
       glRotatef(th,0,1,0);
    } 
 
-   // Building snowfall data
-   if( new_snow == 1 ){
+   // Snowfall frozen in time
+   if( frozen == 1){
+      // Building snowfall data
+      if( new_snow == 1 ){
+         for (i = 0; i < NUM_SNOWFLAKES; i++){
+            // Set x for i in array
+            x = rand() % int_dim;
+            if (rand() % 2 == 0){
+               x = x * -1;
+            }
+            x_ar[i] = x;
+
+            // Set y for i in array
+            y = rand() % int_dim;
+            if (rand() % 2 == 0){
+               y = y * -1;
+            }
+            y_ar[i] = y;
+
+            // Set z for i in array
+            z = rand() % int_dim;
+            if (rand() % 2 == 0){
+               z = z * -1;
+            }
+            z_ar[i] = z;
+
+            // Set size of primary ice crystal
+            s = rand() % int_dim;
+            if (s == 0.0){
+               s = 0.5;
+            }
+            else{
+               s = 1/s;
+            }
+            s_ar[i] = s;
+
+            // Set size modifier for secondary ice crystals
+            m = rand() % int_dim;
+            if (m == 0.0){
+               m = 1.3;
+            }
+            else{
+               m = 1 + 1/m;
+            }
+            m_ar[i] = m;
+         }
+         new_snow = 0;
+      }
+
+      // Building snowfall
       for (i = 0; i < NUM_SNOWFLAKES; i++){
-         // Set x for i in array
-         x = rand() % int_dim;
+         snowflake(x_ar[i], y_ar[i], z_ar[i], s_ar[i],s_ar[i],s_ar[i], m_ar[i], 0);
+      }
+   }
+
+   // Falling snow (rerender each time)
+   else{
+      for (i = 0; i < 10; i++){
+         x = rand() % 10;
+         y = rand() % 10;
+         z = rand() % 10;
          if (rand() % 2 == 0){
             x = x * -1;
          }
-         x_ar[i] = x;
-
-         // Set y for i in array
-         y = rand() % int_dim;
          if (rand() % 2 == 0){
             y = y * -1;
          }
-         y_ar[i] = y;
-
-         // Set z for i in array
-         z = rand() % int_dim;
          if (rand() % 2 == 0){
             z = z * -1;
          }
-         z_ar[i] = z;
-
-         // Set size of primary ice crystal
-         s = rand() % int_dim;
+         s = rand() % 10;
          if (s == 0.0){
             s = 0.5;
          }
          else{
             s = 1/s;
          }
-         s_ar[i] = s;
-
-         // Set size modifier for secondary ice crystals
-         m = rand() % int_dim;
+         m = rand() % 7;
          if (m == 0.0){
             m = 1.3;
          }
          else{
             m = 1 + 1/m;
          }
-         m_ar[i] = m;
+         snowflake(x, y, z, s,s,s, m, 0);
       }
-      new_snow = 0;
-   }
-
-   // Building snowfall
-   for (i = 0; i < NUM_SNOWFLAKES; i++){
-      snowflake(x_ar[i], y_ar[i], z_ar[i], s_ar[i],s_ar[i],s_ar[i], m_ar[i], 0);
    }
 
    //  Draw axes
@@ -347,6 +385,9 @@ void key(unsigned char ch,int x,int y)
    //  Switch display mode
    else if (ch == 'm' || ch == 'M')
       mode = 1-mode;
+   //  Toggle snow falling vs frozen
+   else if (ch == 'f' || ch == 'F')
+      frozen = 1-frozen;
    //  Change field of view angle
    else if (ch == '-' && ch>1)
       fov--;
