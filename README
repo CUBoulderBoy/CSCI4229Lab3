@@ -8,6 +8,7 @@ Utilizing code provided from William Schreuder via the ex9 program
 Key bindings
   m          Toggle between perspective and orthogonal
   f          Toggle between snow frozen in time and falling snow
+  n          For new snow view in frozen in time mode
   +/-        Changes field of view for perspective
   a          Toggle axes
   arrows     Change view angle

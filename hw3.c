@@ -8,6 +8,7 @@
  *  Key bindings:
  *  m          Toggle between perspective and orthogonal
  *  f          Toggle between snow frozen in time and falling snow
+ *  n          For new snow view in frozen in time mode
  *  +/-        Changes field of view for perspective
  *  a          Toggle axes
  *  arrows     Change view angle
@@ -41,6 +42,13 @@ double dim=10.0;  //  Size of world
 int new_snow=1;   //  Global to determine if arrays need to be populated
 int frozen=1;     //  Frozen or falling snow
 
+// For idle function when snow falling
+unsigned long t;
+unsigned long dt;
+
+// For initclock
+int first=0;
+
 // Arrays to store snowflake data
 #define NUM_SNOWFLAKES 12
 int x_ar[NUM_SNOWFLAKES];
@@ -63,10 +71,12 @@ void Print(const char* format , ...)
    char    buf[LEN];
    char*   ch=buf;
    va_list args;
+   
    //  Turn the parameters into a character string
    va_start(args,format);
    vsnprintf(buf,LEN,format,args);
    va_end(args);
+   
    //  Display the characters one at a time at the current raster position
    while (*ch)
       glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,*ch++);
@@ -362,8 +372,10 @@ void special(int key,int x,int y)
    //  Keep angles to +/-360 degrees
    th %= 360;
    ph %= 360;
+
    //  Update projection
    Project();
+   
    //  Tell GLUT it is necessary to redisplay the scene
    glutPostRedisplay();
 }
@@ -388,6 +400,9 @@ void key(unsigned char ch,int x,int y)
    //  Toggle snow falling vs frozen
    else if (ch == 'f' || ch == 'F')
       frozen = 1-frozen;
+   //  Force new snow in frozen view
+   else if (ch == 'n' || ch == 'N')
+      new_snow = 1;
    //  Change field of view angle
    else if (ch == '-' && ch>1)
       fov--;
@@ -395,6 +410,7 @@ void key(unsigned char ch,int x,int y)
       fov++;
    //  Reproject
    Project();
+
    //  Tell GLUT it is necessary to redisplay the scene
    glutPostRedisplay();
 }
@@ -413,22 +429,55 @@ void reshape(int width,int height)
 }
 
 /*
+ *  Idle function for falling snow
+ */
+void idle()
+{
+   int rho;
+
+   dt = clock();
+   rho = (int)(dt - t)/CLOCKS_PER_SEC;
+   if (rho == 1){
+      t = dt;
+      if(frozen == 0){
+         glutPostRedisplay();
+      }
+   }
+}
+
+/*
+ *  Initclock funcition for setting time
+ */
+void initClock()
+{
+   t = clock();
+}
+
+/*
  *  Start up GLUT and tell it what to do
  */
 int main(int argc,char* argv[])
 {
    //  Initialize GLUT
    glutInit(&argc,argv);
+   
    //  Request double buffered, true color window with Z buffering at 600x600
    glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
    glutInitWindowSize(600,600);
    glutCreateWindow("Projections");
+   
    //  Set callbacks
    glutDisplayFunc(display);
    glutReshapeFunc(reshape);
    glutSpecialFunc(special);
    glutKeyboardFunc(key);
+   glutIdleFunc(idle);
+
+   // Set clock
+   initClock();
+
    //  Pass control to GLUT so it can interact with the user
    glutMainLoop();
+   
    return 0;
 }
