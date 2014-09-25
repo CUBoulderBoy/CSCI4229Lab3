@@ -340,7 +340,10 @@ void display()
    }
    //  Display parameters
    glWindowPos2i(5,5);
-   Print("Angle=%d,%d  Dim=%.1f FOV=%d Projection=%s",th,ph,dim,fov,mode?"Perpective":"Orthogonal");
+
+   // Show commands
+   Print("f/F: Toggle Frozen/Falling | n/N: New scene while frozen");
+   
    //  Render the scene and make it visible
    glFlush();
    glutSwapBuffers();
@@ -463,8 +466,8 @@ int main(int argc,char* argv[])
    
    //  Request double buffered, true color window with Z buffering at 600x600
    glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
-   glutInitWindowSize(600,600);
-   glutCreateWindow("Projections");
+   glutInitWindowSize(800,800);
+   glutCreateWindow("Christopher Jordan: CSCI4229 HW3: Snowfalling and Frozen in Time");
    
    //  Set callbacks
    glutDisplayFunc(display);
